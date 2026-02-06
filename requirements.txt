@@ -1,0 +1,12 @@
+flask
+flask-cors
+razorpay
+python-dotenv
+requests
+gspread
+google-auth
+google-auth-oauthlib
+google-auth-httplib2
+pytz
+fpdf2
+urllib3

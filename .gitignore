@@ -1,0 +1,7 @@
+site-packages/
+deploy_package.zip
+deploy_package_v2.zip
+__pycache__/
+*.pyc
+.env
+.DS_Store
