@@ -4,8 +4,9 @@
 
 [[redirects]]
   from = "/api/*"
-  to = "/.netlify/functions/index/:splat"
+  to = "/.netlify/functions/index"
   status = 200
+  force = true
 
 [functions]
-  directory = "api"
+  directory = "functions"
