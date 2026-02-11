@@ -10,3 +10,4 @@ google-auth-httplib2
 pytz
 fpdf2
 urllib3
+serverless-wsgi

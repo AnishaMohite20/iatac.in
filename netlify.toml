@@ -1,0 +1,11 @@
+[build]
+  command = "pip install -r requirements.txt"
+  publish = "."
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/index/:splat"
+  status = 200
+
+[functions]
+  directory = "api"

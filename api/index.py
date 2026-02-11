@@ -15,6 +15,10 @@ import pytz
 from fpdf import FPDF
 from dotenv import load_dotenv
 from flask_cors import CORS
+try:
+    import serverless_wsgi
+except ImportError:
+    serverless_wsgi = None
 
 load_dotenv()
 
@@ -22,12 +26,13 @@ app = Flask(__name__)
 CORS(app)
 
 # Configuration
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RAZORPAY_KEY_ID = os.getenv('RAZORPAY_KEY_ID')
 RAZORPAY_KEY_SECRET = os.getenv('RAZORPAY_KEY_SECRET')
 SENDER_EMAIL = os.getenv('SENDER_EMAIL')
 SENDER_PASSWORD = os.getenv('SENDER_PASSWORD')
 MANAGER_EMAIL = "office.ravindra@gmail.com"
-GOOGLE_SHEET_CREDS_FILE = "google_creds.json" # Expecting file in root or /tmp
+GOOGLE_SHEET_CREDS_FILE = os.path.join(BASE_DIR, "google_creds.json") 
 GOOGLE_SHEET_NAME = os.getenv('GOOGLE_SHEET_NAME')
 
 # Initialize Razorpay
@@ -147,8 +152,7 @@ def log_to_google_sheet(user_details, order_id):
 class IATACReceipt(FPDF):
     def header(self):
         # Logo - requires absolute path or relative to execution
-        # In Vercel, cwd is usually root.
-        logo_path = os.path.join(os.getcwd(), "images", "logo-iatac.png")
+        logo_path = os.path.join(BASE_DIR, "images", "logo-iatac.png")
         if os.path.exists(logo_path):
             self.image(logo_path, 10, 8, 33)
         self.set_font("helvetica", "B", 20)
@@ -308,6 +312,14 @@ def contact_submit():
         return jsonify({"status": "Success", "message": "Sent"})
     except Exception as e:
         return jsonify({"status": "Error", "message": str(e)}), 500
+
+def handler(event, context):
+    if serverless_wsgi:
+        return serverless_wsgi.handle_request(app, event, context)
+    return {
+        'statusCode': 500,
+        'body': 'Serverless WSGI not available.'
+    }
 
 # For local testing
 if __name__ == '__main__':

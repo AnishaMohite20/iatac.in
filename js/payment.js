@@ -21,7 +21,30 @@ document.addEventListener('DOMContentLoaded', function () {
         "Demo Service": 1
     };
 
-    // ... (Modal logic remains same)
+    // Open Modal
+    if (payNowBtn) {
+        payNowBtn.onclick = function () {
+            paymentModal.style.display = "block";
+        }
+    }
+
+    // Close Modal
+    if (closeModal) {
+        closeModal.onclick = function () {
+            paymentModal.style.display = "none";
+        }
+    }
+
+    // Update amount when service changes
+    if (serviceSelect) {
+        serviceSelect.onchange = function () {
+            const selectedService = this.value;
+            const price = prices[selectedService] || 0;
+            amountInput.value = price;
+            const disp = document.getElementById('u_amount_display');
+            if (disp) disp.innerText = price.toLocaleString('en-IN');
+        }
+    }
 
     // Handle Form Submission
     paymentForm.onsubmit = async function (e) {
@@ -42,7 +65,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 body: JSON.stringify(userData)
             });
 
-            if (!response.ok) throw new Error('Failed to create order');
+            if (!response.ok) {
+                const text = await response.text();
+                throw new Error(`Server Error (${response.status}): ${text.substring(0, 50)}`);
+            }
             const order = await response.json();
 
             // 2. Open Razorpay
